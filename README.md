@@ -1,7 +1,7 @@
 # Web Tabanlı Programlama Oyun Geliştirme Projesi
 
 ## Seçtiğim GMTK Game Jam Oyunu
-Out of Ctrl (miknugget.itch.io/out-of-ctrl)
+Out of Ctrl ([miknugget.itch.io/out-of-ctrl](https://miknugget.itch.io/out-of-ctrl))
 
 ## Oyun Açıklaması
 Oyuncuyu kontrol etmek veya sonraki bölüme geçmek... Oyunun nasıl oynanacağıyla ilgili tüm talimatlar oyunda yazılı. Ama bunları uygulayabilmek için cümlelerdeki boşlukları tamamlamanız gerekecek.
