@@ -20,8 +20,8 @@ Oyuncuyu kontrol etmek veya sonraki bölüme geçmek... Oyunun nasıl oynanacağ
 - CSS
 
 ## Projede Yararlandığım Yapay Zeka Araçları
-[chatgpt.com](https://chatgpt.com)  
-Kullanım Biçimi: Aklıma takılan sorulara cevap alma ve anlamadığım konularda bilgi edinme.
+- [chatgpt.com](https://chatgpt.com)  
+**Kullanım Biçimi:** Aklıma takılan sorulara cevap alma ve anlamadığım konularda bilgi edinme.
 
 ## Bana Ait Olmayan Varlıkların Kaynakları
 - Müzik: [opengameart.org](https://opengameart.org)
