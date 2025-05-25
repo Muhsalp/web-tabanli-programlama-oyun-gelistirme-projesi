@@ -1,0 +1,292 @@
+<!doctype html><!--Belge tipinin ayarlanması-->
+<html><head>
+<meta charset="utf-8"/><!--Karakter setinin ayarlanması-->
+<style>
+html, body{height: 100%;} /*Sayfanın tam yüksekliğe ayarlanması*/
+body{margin: 0px; background: #ddd; display: flex; justify-content: center; align-items: center;} /*Oyunun sayfaya ortalanması*/
+#oyun{background: #fff;} /*Oyunun arka plan renginin ayarlanması*/
+</style>
+</head><body>
+<canvas id="oyun"></canvas><!--Oyun kanvasının oluşturulması-->
+<script>
+kanvas = document.getElementById("oyun"); //Kanvasın seçilmesi
+kanvas.width = 1280; //Kanvas genişliğinin ayarlanması
+kanvas.height = 720; //Kanvas yüksekliğinin ayarlanması
+oyun = kanvas.getContext("2d"); //Kanvasın iki boyutlu çizim yapmayı sağlayan bağlamının alınması
+tus = []; //Basılan tuşların tutulacağı dizinin oluşturulması
+muzik = new Audio("ses/muzik.mp3"); //Müziğin ayarlanması
+muzik.loop = true; //Müziğin döngüye alınması
+muzik.volume = 0.2; //Müziğin ses seviyesinin ayarlanması
+itmesesi = new Audio("ses/itme.mp3"); //İtme sesinin ayarlanması
+itmesesi.volume = 1; //İtme sesinin seviyesinin ayarlanması
+kazanmasesi = new Audio("ses/kazanma.wav"); //Kazanma sesinin ayarlanması
+kazanmasesi.volume = 0.3; //Kazanma sesinin seviyesinin ayarlanması
+kaybetmesesi = new Audio("ses/kaybetme.wav"); //Kaybetme sesinin ayarlanması
+kaybetmesesi.volume = 0.3; //Kaybetme sesinin seviyesinin ayarlanması
+
+bolumler = [ //Bölümlerdeki nesnelerin konumlarının ayarlanması
+
+{oyuncu: {x: 750, y: 100},
+yazilar: [{y: 200, t: "Oyuna başlamak için              tuşuna basın."},
+{y: 425, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."},
+{y: 500, t: "Bölümü yeniden başlatmak için         tuşuna basabilirsiniz."},
+{y: 575, t: "Önceki bölüme dönmek için         tuşuna basabilirsiniz."}],
+bosluklar: [{x: 500, y: 175}, {x: 750, y: 400}, {x: 670, y: 470}, {x: 610, y: 545}],
+tuslar: [
+{t: "Ctrl", x: 500, y: 100, w: 100, h: 50},
+{t: "W", x: 750, y: 400-75, w: 50, h: 50},
+{t: "A", x: 750-75, y: 400, w: 50, h: 50},
+{t: "S", x: 750, y: 400, w: 50, h: 50},
+{t: "D", x: 750+75, y: 400, w: 50, h: 50},
+{t: "Y", x: 675, y: 475, w: 50, h: 50},
+{t: "Ö", x: 615, y: 550, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750, y: 200-75, w: 50, h: 50},
+{t: "A", x: 750-75, y: 200, w: 50, h: 50},
+{t: "S", x: 750, y: 200+75, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750-75, y: 200, w: 50, h: 50},
+{t: "A", x: 750, y: 200+75, w: 50, h: 50},
+{t: "S", x: 750+75, y: 200, w: 50, h: 50},
+{t: "D", x: 750, y: 200-75, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 825, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750, y: 200-75, w: 50, h: 50},
+{t: "A", x: 750-75, y: 200, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200+75, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750, y: 200-75, w: 50, h: 50},
+{t: "S", x: 750, y: 200, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "A", x: 750-75, y: 200, w: 50, h: 50},
+{t: "S", x: 750, y: 200, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750, y: 200+75, w: 50, h: 50},
+{t: "A", x: 750+75, y: 200, w: 50, h: 50},
+{t: "S", x: 750, y: 200-75, w: 50, h: 50},
+{t: "D", x: 750-75, y: 200, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 475, y: 550},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750, y: 200-75, w: 50, h: 50},
+{t: "S", x: 750, y: 200, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 825, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750, y: 200-75, w: 50, h: 50},
+{t: "A", x: 750-75, y: 200+75, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200+75, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 825, y: 125},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "W", x: 750-75, y: 200-75, w: 50, h: 50},
+{t: "A", x: 750-75, y: 200, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 475, w: 100, h: 50},
+{t: "W", x: 750, y: 200-75, w: 50, h: 50},
+{t: "A", x: 750-75, y: 200-75, w: 50, h: 50},
+{t: "S", x: 750, y: 200, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200-75, w: 50, h: 50}
+]},
+
+{oyuncu: {x: 750, y: 400},
+yazilar: [{y: 500, t: "Devam etmek için               tuşuna basın."},
+{y: 225, t: "Oyuncuyu hareket ettirmek için                       tuşlarını kullanın."}],
+bosluklar: [{x: 450, y: 475}, {x: 750, y: 200}],
+tuslar: [
+{t: "Ctrl", x: 450, y: 400, w: 100, h: 50},
+{t: "A", x: 750-75, y: 200, w: 50, h: 50},
+{t: "D", x: 750+75, y: 200, w: 50, h: 50}
+]}
+
+];
+
+function yenibolum(){ //Yeni bölüm başladığında yapılacakların ayarlanması
+oyuncu = {...bolumler[bolum].oyuncu, w: 50, h: 50, goz: 0}; //Güncel bölümdeki oyuncunun bilgilerinin ayarlanması
+yazilar = structuredClone(bolumler[bolum].yazilar); //Güncel bölümdeki yazıların konumlarının alınması
+bosluklar = structuredClone(bolumler[bolum].bosluklar); //Güncel bölümdeki boşlukların konumlarının alınması
+tuslar = structuredClone(bolumler[bolum].tuslar); //Güncel bölümdeki tuşların konumlarının alınması
+}
+
+function kesisim(a, b){ //Kesişim kontrolü için yapılacakların ayarlanması
+return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y; //İki nesnenin kesişip kesişmediğinin döndürülmesi
+}
+
+function ciz(){ //Kanvasa çizim için yapılacakların ayarlanması
+oyun.clearRect(0, 0, kanvas.width, kanvas.height); //Kanvasın temizlenmesi
+oyun.font = "40px Arial"; //Yazı tipinin ayarlanması
+oyun.textAlign = "left"; //Yazının yatay hizalamasının ayarlanması
+oyun.textBaseline = "middle"; //Yazının dikey hizalamasının ayarlanması
+oyun.fillStyle = "#e12"; //Dolgu renginin ayarlanması
+oyun.fillText(bolum?(bolum==11?"Son":bolum+".")+" Bölüm":"Nasıl Oynanır?", 100, bolum?100:350); //Bölüm başlığının yazdırılması
+oyun.fillStyle = "#888"; //Dolgu renginin ayarlanması
+for(yazi of yazilar){ //Bölümdeki yazıların alınması
+oyun.fillText(yazi.t, 100, yazi.y); //Oyun talimatlarının yazdırılması
+}
+oyun.lineWidth = 3; //Kenarlık kalınlığının ayarlanması
+oyun.setLineDash([8, 6]); //Kenarlık tipinin ayarlanması
+oyun.strokeStyle = "#888"; //Kenarlık renginin ayarlanması
+oyun.beginPath(); //Çizim yolu başlatılması
+oyun.roundRect(bosluklar[0].x-5, bosluklar[0].y-5, 110, 60, 10); //Devam tuşu için çizilecek boşluğun eklenmesi
+oyun.roundRect(bosluklar[1].x-5, bosluklar[1].y-80, 60, 60, 10); //Yukarı tuşu için çizilecek boşluğun eklenmesi
+oyun.roundRect(bosluklar[1].x-80, bosluklar[1].y-5, 60, 60, 10); //Sol tuşu için çizilecek boşluğun eklenmesi
+oyun.roundRect(bosluklar[1].x-5, bosluklar[1].y-5, 60, 60, 10); //Aşağı tuşu için çizilecek boşluğun eklenmesi
+oyun.roundRect(bosluklar[1].x+70, bosluklar[1].y-5, 60, 60, 10); //Sağ tuşu için çizilecek boşluğun eklenmesi
+if(!bolum){ //Bölümler başlamadıysa yapılacakların ayarlanması
+oyun.roundRect(bosluklar[2].x, bosluklar[2].y, 60, 60, 10); //Yeniden başlatma tuşu için çizilecek boşluğun eklenmesi
+oyun.roundRect(bosluklar[3].x, bosluklar[3].y, 60, 60, 10); //Önceki bölüm tuşu için çizilecek boşluğun eklenmesi
+}
+oyun.stroke(); //Çizim yolundakilerin kenarlıklarının çizilmesi
+oyun.setLineDash([]); //Kenarlık tipinin ayarlanması
+oyun.beginPath(); //Çizim yolu başlatılması
+for(let tus of tuslar){ //Bölümdeki tuşların alınması
+oyun.roundRect(tus.x, tus.y, tus.w, tus.h, 5); //Tuşların eklenmesi
+}
+oyun.fillStyle = "#ccc"; //Dolgu renginin ayarlanması
+oyun.strokeStyle = "#000"; //Kenarlık renginin ayarlanması
+oyun.fill(); //Çizim yolundakilerin dolgularının çizilmesi
+oyun.stroke(); //Çizim yolundakilerin kenarlıklarının çizilmesi
+oyun.font = "25px Arial"; //Yazı tipinin ayarlanması
+oyun.textAlign = "center"; //Yazının yatay hizalamasının ayarlanması
+oyun.fillStyle = "#000"; //Dolgu renginin ayarlanması
+for(let tus of tuslar){ //Bölümdeki tuşların alınması
+oyun.fillText(tus.t, tus.x+tus.w/2, tus.y+tus.h/2); //Tuşların isimlerinin yazdırılması
+}
+if(oyuncu.goz !== false){ //Oyuncunun gözü arka tarafta değilse yapılacakların ayarlanması
+oyun.fillStyle = "#fc0"; //Dolgu renginin ayarlanması
+oyun.beginPath(); //Çizim yolu başlatılması
+oyun.roundRect(oyuncu.x, oyuncu.y, oyuncu.w, oyuncu.h, 5); //Oyuncunun eklenmesi
+oyun.fill(); //Çizim yolundakilerin dolgularının çizilmesi
+}
+oyun.beginPath(); //Çizim yolu başlatılması
+oyun.arc(oyuncu.x+oyuncu.w/2+oyuncu.goz*15-10, oyuncu.y-(oyuncu.goz===false?30:Math.abs(oyuncu.goz)*15)+30, 5, 0, 2*Math.PI); //Sol gözün eklenmesi
+oyun.arc(oyuncu.x+oyuncu.w/2+oyuncu.goz*15+10, oyuncu.y-(oyuncu.goz===false?30:Math.abs(oyuncu.goz)*15)+30, 5, 0, 2*Math.PI); //Sağ gözün eklenmesi
+oyun.fillStyle = "#000"; //Dolgu renginin ayarlanması
+oyun.fill(); //Çizim yolundakilerin dolgularının çizilmesi
+if(oyuncu.goz === false){ //Oyuncunun gözü arka taraftaysa yapılacakların ayarlanması
+oyun.fillStyle = "#fc0"; //Dolgu renginin ayarlanması
+oyun.beginPath(); //Çizim yolu başlatılması
+oyun.roundRect(oyuncu.x, oyuncu.y, oyuncu.w, oyuncu.h, 5); //Oyuncunun eklenmesi
+oyun.fill(); //Çizim yolundakilerin dolgularının çizilmesi
+}}
+
+addEventListener("keydown", function(e){ //Bir tuşa basıldığında yapılacakların ayarlanması
+muzik.play(); //Müziğin oynatılması
+if(e.key == "w"){tus["w"] = true;} //Basılan tuş W'ysa tuşun basıldığının kaydedilmesi
+if(e.key == "a"){tus["a"] = true;} //Basılan tuş A'ysa tuşun basıldığının kaydedilmesi
+if(e.key == "s"){tus["s"] = true;} //Basılan tuş S'yse tuşun basıldığının kaydedilmesi
+if(e.key == "d"){tus["d"] = true;} //Basılan tuş D'yse tuşun basıldığının kaydedilmesi
+if(e.key == "y"){yenibolum(); ciz(); kaybetmesesi.currentTime = 0; kaybetmesesi.play();} //Basılan tuş Y'yse bölümün yeniden başlatılması ve kaybetme sesinin başından oynatılması
+if(e.key == "ö"){if(bolum){bolum--;} yenibolum(); ciz(); kaybetmesesi.currentTime = 0; kaybetmesesi.play();} //Basılan tuş Ö'yse önceki bölüme dönülmesi ve kaybetme sesinin başından oynatılması
+if(e.key=="Control" && tuslar[0].x==bosluklar[0].x && tuslar[0].y==bosluklar[0].y){bolum++; yenibolum(); ciz(); kazanmasesi.currentTime = 0; kazanmasesi.play();} //Basılan tuş Ctrl'yse ve Ctrl tuşu boşluğundaysa sonraki bölüme geçilmesi ve kazanma sesinin başından oynatılması
+});
+
+addEventListener("keyup", function(e){ //Bir tuş bırakıldığında yapılacakların ayarlanması
+if(e.key == "w"){tus["w"] = false;} //Bırakılan tuş W'ysa tuşun basılmadığının kaydedilmesi
+if(e.key == "a"){tus["a"] = false;} //Bırakılan tuş A'ysa tuşun basılmadığının kaydedilmesi
+if(e.key == "s"){tus["s"] = false;} //Bırakılan tuş S'yse tuşun basılmadığının kaydedilmesi
+if(e.key == "d"){tus["d"] = false;} //Bırakılan tuş D'yse tuşun basılmadığının kaydedilmesi
+});
+
+bolum = 0; //Başlangıçtaki bölümün ayarlanması
+yenibolum(); //Yeni bölüm başladığında yapılacakların yapılması
+ciz(); //Kanvasa çizim için yapılacakların yapılması
+
+setInterval(function(){ //Sürekli yapılacakların ayarlanması
+if(tus["w"] || tus["a"] || tus["s"] || tus["d"]){ //Oyun yön tuşları basılıysa yapılacakların ayarlanması
+x = 0; //Yatay hareketin hesaplanacağı değişkenin oluşturulması
+y = 0; //Dikey hareketin hesaplanacağı değişkenin oluşturulması
+basili = false; //Boşluklarda olan tuşlara basılıp basılmadığının tutulacağı değişkenin oluşturulması
+for(t of tuslar){ //Bölümdeki tuşların alınması
+if(tus[t.t.toLowerCase()]){ //Tuşa basılıysa yapılacakların ayarlanması
+if(t.x==bosluklar[1].x && t.y==bosluklar[1].y-75){y--; basili = true;} //Basılan tuş yukarı tuşu için olan boşluktaysa hareketin hesaplanması ve basıldığının kaydedilmesi
+if(t.x==bosluklar[1].x-75 && t.y==bosluklar[1].y){x--; basili = true;} //Basılan tuş sol tuşu için olan boşluktaysa hareketin hesaplanması ve basıldığının kaydedilmesi
+if(t.x==bosluklar[1].x && t.y==bosluklar[1].y){y++; basili = true;} //Basılan tuş aşağı tuşu için olan boşluktaysa hareketin hesaplanması ve basıldığının kaydedilmesi
+if(t.x==bosluklar[1].x+75 && t.y==bosluklar[1].y){x++; basili = true;} //Basılan tuş sağ tuşu için olan boşluktaysa hareketin hesaplanması ve basıldığının kaydedilmesi
+}}
+if(basili){ //Basılı tuş varsa yapılacakların ayarlanması
+hiz = x&&y?5/Math.sqrt(2):5; //Oyuncu hızının yöne göre hesaplanması
+oyuncu.x += x*hiz; //Oyuncunun yatay konumunun değiştirilmesi
+oyuncu.y += y*hiz; //Oyuncunun dikey konumunun değiştirilmesi
+if(oyuncu.x+oyuncu.w < 0){oyuncu.x = kanvas.width;} //Oyuncunun kanvasın solundan çıktığı durumda kanvasın sağında konumlandırılması
+if(oyuncu.x > kanvas.width){oyuncu.x = -oyuncu.w;} //Oyuncunun kanvasın sağından çıktığı durumda kanvasın solunda konumlandırılması
+if(oyuncu.y+oyuncu.h < 0){oyuncu.y = kanvas.height;} //Oyuncunun kanvasın üstünden çıktığı durumda kanvasın altında konumlandırılması
+if(oyuncu.y > kanvas.height){oyuncu.y = -oyuncu.h;} //Oyuncunun kanvasın altından çıktığı durumda kanvasın üstünde konumlandırılması
+oyuncu.goz = y==-1&&!x?false:x; //Oyuncunun göz değerinin yöne göre hesaplanması
+for(let tus of tuslar){ //Bölümdeki tuşların alınması
+if(kesisim(oyuncu, tus)){tus.x += x*25; tus.y += y*25; itmesesi.currentTime = 0; itmesesi.play();} //Oyuncu bir tuşu itiyorsa tuşun konumunun değiştirilmesi ve itme sesinin başından oynatılması
+}
+for(i=0; i<tuslar.length; i++){ //Tüm tuşlar için yapılacakların ayarlanması
+for(j=i+1; j<tuslar.length; j++){ //Sonrasındaki tuşlar için yapılacakların ayarlanması
+if(kesisim(tuslar[i], tuslar[j])){ //Bir tuş başka bir tuşu itiyorsa yapılacakların ayarlanması
+tuslar[j].x += x*25; tuslar[j].y += y*25; //Tuşun konumunun değiştirilmesi
+}}}
+ciz(); //Kanvasa çizim için yapılacakların yapılması
+}}}, 20); //Sürekli yapılacakların tekrarlama süresinin ayarlanması
+</script>
+</body></html>
