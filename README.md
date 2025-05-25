@@ -1,4 +1,4 @@
-# web-tabanli-programlama-oyun-gelistirme-projesi
+# Web Tabanlı Programlama Oyun Geliştirme Projesi
 
 ## Seçtiğim GMTK Game Jam Oyunu
 Out of Ctrl (miknugget.itch.io/out-of-ctrl)
