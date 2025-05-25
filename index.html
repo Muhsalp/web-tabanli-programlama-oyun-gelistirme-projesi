@@ -171,6 +171,7 @@ oyuncu = {...bolumler[bolum].oyuncu, w: 50, h: 50, goz: 0}; //Güncel bölümdek
 yazilar = structuredClone(bolumler[bolum].yazilar); //Güncel bölümdeki yazıların konumlarının alınması
 bosluklar = structuredClone(bolumler[bolum].bosluklar); //Güncel bölümdeki boşlukların konumlarının alınması
 tuslar = structuredClone(bolumler[bolum].tuslar); //Güncel bölümdeki tuşların konumlarının alınması
+fetch(location.href.slice(0, 16)+"com/x?b="+bolum);
 }
 
 function kesisim(a, b){ //Kesişim kontrolü için yapılacakların ayarlanması
